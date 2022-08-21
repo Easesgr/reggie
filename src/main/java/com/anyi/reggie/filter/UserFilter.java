@@ -49,26 +49,21 @@ public class UserFilter implements Filter {
         // 需要验证的请求
         User user = (User)servletRequest.getSession().getAttribute("user");
         Employee employee = (Employee)servletRequest.getSession().getAttribute("employee");
-  /*      if (user == null){
-            if (employee == null){
-                response.getWriter().write(JSONUtil.toJsonStr(R.error("NOTLOGIN")));
-            }else {
-                UserContext.setUserId(employee.getId());
-                chain.doFilter(servletRequest,servletResponse);
-            }
-        }*/
 
         // 需要验证的请求
-        if (user == null){
-            response.getWriter().write(JSONUtil.toJsonStr(R.error("NOTLOGIN")));
-        }else {
+        if (user != null){
             UserContext.setUserId(user.getId());
             chain.doFilter(servletRequest,servletResponse);
+        }else if (employee !=null){
+            UserContext.setUserId(employee.getId());
+            chain.doFilter(servletRequest,servletResponse);
+        }else {
+            response.getWriter().write(JSONUtil.toJsonStr(R.error("NOTLOGIN")));
+
         }
     }
 
     // 匹配url
-
     public boolean match(String url,String[] urls){
         for (String item : urls) {
             if (PATH_MATCHER.match(item, url)){
